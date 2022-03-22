@@ -1,0 +1,6 @@
+/target
+.idea/
+*.xlsx
+*.docx
+*.csv
+*.exe
