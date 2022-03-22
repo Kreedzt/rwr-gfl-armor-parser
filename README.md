@@ -2,7 +2,7 @@
 
 ## 快速上手
 
-下载[构建后代码](https://github.com/Kreedzt/rwr-gfl-weapon-parser/releases), 然后从命令行附带参数启动即可:
+下载[构建后代码](https://github.com/Kreedzt/rwr-gfl-armor-parser/releases), 然后从命令行附带参数启动即可:
 
 > 路径替换为自己的路径即可
 > -i 后面参数为护甲目录路径
