@@ -55,7 +55,7 @@ fn parse_hud_icon(
     e: &BytesStart,
     reader: &mut Reader<&[u8]>,
     output_struct: &mut Output,
-    extra_msg_list: &mut Vec<String>,
+    _extra_msg_list: &mut Vec<String>,
 ) {
     for attr in e.attributes() {
         let attr_unwrap_res = attr.unwrap();
@@ -82,7 +82,7 @@ fn parse_modifier(
     e: &BytesStart,
     reader: &mut Reader<&[u8]>,
     output_struct: &mut Output,
-    extra_msg_list: &mut Vec<String>,
+    _extra_msg_list: &mut Vec<String>,
 ) {
     // 记录上一次的 class, 使得下一次的 value 赋值
     let mut prev_class: Option<String> = None;
@@ -179,7 +179,7 @@ fn parse_translation_text(
     e: &BytesStart,
     reader: &mut Reader<&[u8]>,
     map: &mut HashMap<String, String>,
-    extra_msg_list: &mut Vec<String>
+    _extra_msg_list: &mut Vec<String>
 ) {
     let mut prev_text_key = String::new();
     for attr in e.attributes() {
