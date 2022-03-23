@@ -3,9 +3,9 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "weapon-parser", about = "rwr gf mod weapon data parser")]
+#[structopt(name = "armor-parser", about = "rwr gf mod armor data parser")]
 pub struct Opt {
-    /// weapon folder full path
+    /// armor folder full path
     #[structopt(short, long, parse(from_os_str))]
     pub input: PathBuf,
     /// cn translation file full path
