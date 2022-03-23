@@ -175,8 +175,6 @@ pub fn parse_empty_event(
     }
 }
 
-pub fn parse_event_item() {}
-
 fn parse_translation_text(
     e: &BytesStart,
     reader: &mut Reader<&[u8]>,

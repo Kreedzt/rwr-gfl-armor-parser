@@ -9,7 +9,7 @@
 > -t 后面参数为翻译文件路径
 
 ``` sh
-.\armor-parser.exe -i -i F:\SteamLibrary\steamapps\workshop\content\270150\2513537759\media\packages\Girls_FrontLine\items\ -t F:\SteamLibrary\steamapps\workshop\content\270150\2513537759\media\packages\Girls_FrontLine\languages\cn\misc_text_GFL.xml
+.\armor-parser.exe -i F:\SteamLibrary\steamapps\workshop\content\270150\2513537759\media\packages\Girls_FrontLine\items\ -t F:\SteamLibrary\steamapps\workshop\content\270150\2513537759\media\packages\Girls_FrontLine\languages\cn\misc_text_GFL.xml
 ```
 
 执行成功后会在当前目录生成一个带时间的 `CSV` 文件(注意: CSV 文件在 Excel 中直接打开无法读取中文字符, 建议新建 Excel 导入 CSV 数据源打开, 编码选择 UTF-8)
@@ -52,6 +52,10 @@ cargo build --release
 ```
 
 执行成功后会在当前目录生成一个带时间的 `CSV` 文件(注意: CSV 文件在 Excel 中直接打开无法读取中文字符, 建议新建 Excel 导入 CSV 数据源打开, 编码选择 UTF-8)
+
+## 其他项目
+
+- [RWR GFL mod 武器数据提取工具](https://github.com/Kreedzt/rwr-gfl-weapon-parser)
 
 ## 协议
 
