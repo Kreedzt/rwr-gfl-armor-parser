@@ -5,7 +5,7 @@ mod model;
 mod parse;
 
 use crate::model::Output;
-use armor_parser::export_to_file;
+use rwr_gfl_armor_parser::export_to_file;
 use std::path::PathBuf;
 use structopt::StructOpt;
 

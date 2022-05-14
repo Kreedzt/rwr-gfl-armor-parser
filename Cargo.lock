@@ -3,18 +3,6 @@
 version = 3
 
 [[package]]
-name = "armor-parser"
-version = "0.2.0"
-dependencies = [
- "chrono",
- "csv",
- "encoding_rs",
- "quick-xml",
- "serde",
- "structopt",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -207,6 +195,18 @@ name = "regex-automata"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c230d73fb8d8c1b9c0b3135c5142a8acee3a0558fb8db5cf1cb65f8d7862132"
+
+[[package]]
+name = "rwr_gfl_armor_parser"
+version = "0.2.0"
+dependencies = [
+ "chrono",
+ "csv",
+ "encoding_rs",
+ "quick-xml",
+ "serde",
+ "structopt",
+]
 
 [[package]]
 name = "ryu"

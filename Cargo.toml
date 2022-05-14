@@ -1,5 +1,3 @@
-cargo-features = ["strip"]
-
 [package]
 name = "rwr_gfl_armor_parser"
 version = "0.2.0"
