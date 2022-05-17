@@ -3,16 +3,17 @@ use quick_xml::events::BytesStart;
 use quick_xml::Reader;
 use std::collections::HashMap;
 use std::str;
+use anyhow::{Result, anyhow};
 
 fn parse_carry_item(
     e: &BytesStart,
     reader: &mut Reader<&[u8]>,
     output_struct: &mut Output,
     extra_msg_list: &mut Vec<String>,
-) {
+) -> Result<()> {
     for attr in e.attributes() {
-        let attr_unwrap_res = attr.unwrap();
-        let attr_value = attr_unwrap_res.unescape_and_decode_value(&reader).unwrap();
+        let attr_unwrap_res = attr?;
+        let attr_value = attr_unwrap_res.unescape_and_decode_value(&reader)?;
         let attr_key = attr_unwrap_res.key;
 
         match attr_key {
@@ -23,16 +24,16 @@ fn parse_carry_item(
                 output_struct.key.get_or_insert(attr_value);
             }
             b"slot" => {
-                output_struct.slot.get_or_insert(attr_value.parse().unwrap());
+                output_struct.slot.get_or_insert(attr_value.parse()?);
             }
             b"drop_count_factor_on_death" => {
-                output_struct.drop_count_factor_on_death.get_or_insert(attr_value.parse().unwrap());
+                output_struct.drop_count_factor_on_death.get_or_insert(attr_value.parse()?);
             }
             b"time_to_live_out_in_the_open" => {
-                output_struct.time_to_live_out_in_the_open.get_or_insert(attr_value.parse().unwrap());
+                output_struct.time_to_live_out_in_the_open.get_or_insert(attr_value.parse()?);
             }
             b"player_death_drop_owner_lock_time" => {
-                output_struct.player_death_drop_owner_lock_time.get_or_insert(attr_value.parse().unwrap());
+                output_struct.player_death_drop_owner_lock_time.get_or_insert(attr_value.parse()?);
             }
             b"transform_on_consume" => {
                 output_struct.transform_on_consume.get_or_insert(attr_value);
@@ -40,7 +41,7 @@ fn parse_carry_item(
             _ => {
                 let msg = format!(
                     "armor attr: {} / {}",
-                    str::from_utf8(attr_key).unwrap(),
+                    str::from_utf8(attr_key)?,
                     attr_value
                 );
                 extra_msg_list.push(msg);
@@ -49,6 +50,8 @@ fn parse_carry_item(
             }
         }
     }
+
+    Ok(())
 }
 
 fn parse_hud_icon(
@@ -56,10 +59,10 @@ fn parse_hud_icon(
     reader: &mut Reader<&[u8]>,
     output_struct: &mut Output,
     _extra_msg_list: &mut Vec<String>,
-) {
+) -> Result<()> {
     for attr in e.attributes() {
-        let attr_unwrap_res = attr.unwrap();
-        let attr_value = attr_unwrap_res.unescape_and_decode_value(&reader).unwrap();
+        let attr_unwrap_res = attr?;
+        let attr_value = attr_unwrap_res.unescape_and_decode_value(&reader)?;
         let attr_key = attr_unwrap_res.key;
 
         match attr_key {
@@ -76,6 +79,8 @@ fn parse_hud_icon(
             }
         }
     }
+
+    Ok(())
 }
 
 fn parse_modifier(
@@ -83,13 +88,13 @@ fn parse_modifier(
     reader: &mut Reader<&[u8]>,
     output_struct: &mut Output,
     _extra_msg_list: &mut Vec<String>,
-) {
+) -> Result<()> {
     // 记录上一次的 class, 使得下一次的 value 赋值
     let mut prev_class: Option<String> = None;
 
     for attr in e.attributes() {
-        let attr_unwrap_res = attr.unwrap();
-        let attr_value = attr_unwrap_res.unescape_and_decode_value(&reader).unwrap();
+        let attr_unwrap_res = attr?;
+        let attr_value = attr_unwrap_res.unescape_and_decode_value(&reader)?;
         let attr_key = attr_unwrap_res.key;
 
         match attr_key {
@@ -122,6 +127,8 @@ fn parse_modifier(
             }
         }
     }
+
+    Ok(())
 }
 
 pub fn parse_normal_event(
@@ -129,10 +136,10 @@ pub fn parse_normal_event(
     reader: &mut Reader<&[u8]>,
     output_struct: &mut Output,
     extra_msg_list: &mut Vec<String>,
-) {
+) -> Result<()> {
     match e.name() {
         b"carry_item" => {
-            parse_carry_item(e, reader, output_struct, extra_msg_list);
+            parse_carry_item(e, reader, output_struct, extra_msg_list)?;
         }
         _ => {
             // DEBUG
@@ -142,6 +149,8 @@ pub fn parse_normal_event(
             // );
         }
     }
+
+    Ok(())
 }
 
 pub fn parse_empty_event(
@@ -149,10 +158,10 @@ pub fn parse_empty_event(
     reader: &mut Reader<&[u8]>,
     output_struct: &mut Output,
     extra_msg_list: &mut Vec<String>,
-) {
+) -> Result<()> {
     match e.name() {
         b"hud_icon" => {
-            parse_hud_icon(e, reader, output_struct, extra_msg_list);
+            parse_hud_icon(e, reader, output_struct, extra_msg_list)?;
         }
         b"commonness" => {
             // TODO
@@ -163,7 +172,7 @@ pub fn parse_empty_event(
             // println!("TODO: inventory parse");
         }
         b"modifier" => {
-            parse_modifier(e, reader, output_struct, extra_msg_list);
+            parse_modifier(e, reader, output_struct, extra_msg_list)?;
         }
         _ => {
             // DEBUG
@@ -173,6 +182,8 @@ pub fn parse_empty_event(
             // );
         }
     }
+
+    Ok(())
 }
 
 fn parse_translation_text(
@@ -180,11 +191,11 @@ fn parse_translation_text(
     reader: &mut Reader<&[u8]>,
     map: &mut HashMap<String, String>,
     _extra_msg_list: &mut Vec<String>
-) {
+) -> Result<()> {
     let mut prev_text_key = String::new();
     for attr in e.attributes() {
-        let attr_unwrap_res = attr.unwrap();
-        let attr_value = attr_unwrap_res.unescape_and_decode_value(&reader).unwrap();
+        let attr_unwrap_res = attr?;
+        let attr_value = attr_unwrap_res.unescape_and_decode_value(&reader)?;
         let attr_key = attr_unwrap_res.key;
 
         match attr_key {
@@ -206,6 +217,8 @@ fn parse_translation_text(
             }
         }
     }
+
+    Ok(())
 }
 
 pub fn parse_translation_empty(
@@ -213,13 +226,15 @@ pub fn parse_translation_empty(
     reader: &mut Reader<&[u8]>,
     map: &mut HashMap<String, String>,
     extra_msg_list: &mut Vec<String>,
-) {
+) -> Result<()> {
     match e.name() {
         b"text" => {
-            parse_translation_text(e, reader, map, extra_msg_list);
+            parse_translation_text(e, reader, map, extra_msg_list)?;
         }
         _ => {
             // holder
         }
     }
+
+    Ok(())
 }

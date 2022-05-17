@@ -9,11 +9,12 @@ use csv::Writer;
 use quick_xml::{events::Event, Reader};
 use std::collections::HashMap;
 use std::{fs, io};
+use anyhow::{Result, anyhow};
 
 pub fn export_to_file(
     folder_path: &str,
     translation_path: &str
-) -> Result<String, ()> {
+) -> Result<String> {
      let local = Local::now();
 
     let current_time = local.format("%Y-%m-%d-%H-%M-%S").to_string();
@@ -34,11 +35,11 @@ pub fn export_to_file(
             // }
             // 闭合标签
             Ok(Event::Empty(ref e)) => {
-                parse_translation_empty(e, &mut reader, &mut translation_map, &mut extra_msg_list);
+                parse_translation_empty(e, &mut reader, &mut translation_map, &mut extra_msg_list)?;
             }
             Ok(Event::Text(e)) => {
                 // holder
-                println!("text: {}", e.unescape_and_decode(&reader).unwrap());
+                println!("text: {}", e.unescape_and_decode(&reader)?);
             }
             Ok(Event::Eof) => break,
             Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
@@ -56,22 +57,21 @@ pub fn export_to_file(
                 .to_string()
                 .ends_with(".carry_item")
         })
-        .collect::<Result<Vec<_>, io::Error>>()
-        .expect("parse error");
+        .collect::<Result<Vec<_>, io::Error>>()?;
+        // .expect("parse error");
 
     let output_file_name = format!("armor-parser-output-{}.csv", current_time);
-    let mut writer = Writer::from_path(&output_file_name).expect("Can't output file");
+    let mut writer = Writer::from_path(&output_file_name)?;
 
     let total = entries.len();
 
     for (index, path) in entries.into_iter().enumerate() {
         println!("process: {} / {}", index + 1, total);
 
-        let path_string = path.display().to_string();
-        let path_list = path_string.split("\\").collect::<Vec<_>>();
 
-        let last_path = path_list.last().unwrap();
-        println!("===Starting parsing file: {}===", last_path);
+        let file_name_option = path.file_name().unwrap();
+        let file_name = String::from(file_name_option.to_str().unwrap());
+        println!("===Starting parsing file: {}===", file_name);
 
         let res_str =
             decode::read_file_decode_to_utf8(&path.into_os_string().into_string().unwrap()).unwrap_or("".to_string());
@@ -83,19 +83,23 @@ pub fn export_to_file(
         let mut output_carry_item_vec: Vec<Output> = vec![];
         let mut output_struct = Output::default();
 
-        output_struct.source_file_name = last_path.to_string();
+        output_struct.source_file_name = file_name.clone();
 
         loop {
             match reader.read_event(&mut buf) {
                 Ok(Event::Start(ref e)) => {
-                    parse_normal_event(e, &mut reader, &mut output_struct, &mut extra_msg_list);
+                    parse_normal_event(e, &mut reader, &mut output_struct, &mut extra_msg_list).map_err(|err| {
+                      anyhow!("Err in file: {}, parse_normal_event \n {:?}", file_name, err)
+                    })?;
                 }
                 // 闭合标签
                 Ok(Event::Empty(ref e)) => {
-                    parse_empty_event(e, &mut reader, &mut output_struct, &mut extra_msg_list);
+                    parse_empty_event(e, &mut reader, &mut output_struct, &mut extra_msg_list).map_err(|err| {
+                        anyhow!("Err in file: {}, parse_empty_event \n {:?}", file_name, err)
+                    })?;
                 }
                 Ok(Event::Text(e)) => {
-                    println!("text: {}", e.unescape_and_decode(&reader).unwrap());
+                    println!("text: {}", e.unescape_and_decode(&reader)?);
                 }
                 Ok(Event::End(ref e)) => {
                     match e.name() {
@@ -125,7 +129,7 @@ pub fn export_to_file(
                 println!("===cn_name: {:?} ===", output_item.cn_name);
             }
 
-            writer.serialize(output_item.clone()).unwrap();
+            writer.serialize(output_item.clone())?;
         }
 
         println!("===parse completed===");

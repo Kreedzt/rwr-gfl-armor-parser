@@ -21,3 +21,4 @@ csv = "1.1"
 encoding_rs = "0.8.30"
 structopt = { version = "0.3", default-features = false }
 quick-xml = { version = "0.22.0" }
+anyhow = "1.0.57"
