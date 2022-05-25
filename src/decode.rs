@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 use std::fs::File;
 use std::io::Read;
 use encoding_rs::*;
