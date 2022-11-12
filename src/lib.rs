@@ -138,5 +138,17 @@ pub fn export_to_file(
 
     writer.flush().expect("flush error");
 
+    println!("===extra_msg_list===");
+
+    for item in extra_msg_list {
+        println!("{}", item);
+    }
+
+    println!("===extra_msg_list output completed===");
+
+    println!("translation total text count: {}", translation_map.len());
+
+    println!("Task completed, fileName: {}", output_file_name);
+
     Ok(output_file_name)
 }

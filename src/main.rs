@@ -15,5 +15,7 @@ fn main() {
     let folder_path: PathBuf = opt.input;
     let translation_path: PathBuf = opt.translation;
 
-    export_to_file(folder_path.to_str().unwrap(), translation_path.to_str().unwrap()).unwrap();
+    let output = export_to_file(folder_path.to_str().unwrap(), translation_path.to_str().unwrap());
+
+    println!("Output fileName: {}", output.unwrap());
 }
